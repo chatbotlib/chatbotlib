@@ -67,13 +67,13 @@ export function chatArrayToTrainingExamplesAndQuery(chatArray) {
       //We have a non-empty chat transcript. The last message in that transcript
       //was the human's message, and so the current message is the chatbot's
       //response:
-      const trainingExample = [transcript, chatMessage.trim()];
+      const trainingExample = [transcript.trim(), chatMessage.trim()];
       trainingExamples.push(trainingExample);
     }
     transcript +=
       (isHuman ? "human: " : "chatbot: ") + chatMessage.trim() + "\n";
     if (isHuman && idx === chatArray.length - 1) {
-      output.query = chatMessage.trim();
+      output.query = transcript.trim();
     }
   }
   return output;
@@ -96,6 +96,10 @@ export function chatTranscriptToArray(chatTranscript) {
     return [];
   }
   assert(chatTranscript.startsWith("human: "));
+
+  // Otherwise the split function will create first element as blank string!
+  chatTranscript = chatTranscript.substring("human: ".length);
+
   const uniqueToken = uniqueTokenNotIn(chatTranscript);
   chatTranscript = chatTranscript.replaceAll("human: ", uniqueToken);
   chatTranscript = chatTranscript.replaceAll("chatbot: ", uniqueToken);
